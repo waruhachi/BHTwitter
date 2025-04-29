@@ -1,2 +1,5 @@
-.DS_Store
 .theos
+.vscode
+.DS_Store
+
+/packages

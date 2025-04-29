@@ -26,9 +26,9 @@
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     self.tableView.editing = YES;
-    
+
     self.data = [NSMutableArray new];
-    
+
     [self.view addSubview:self.tableView];
     [NSLayoutConstraint activateConstraints:@[
         [self.tableView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
@@ -71,7 +71,11 @@
 - (NSArray<BHCustomTabBarItem *> *)getItemsForKey:(NSString *)key {
     NSData *savedItems = [[NSUserDefaults standardUserDefaults] objectForKey:key];
     if (savedItems) {
-        return [NSKeyedUnarchiver unarchiveObjectWithData:savedItems];
+        NSArray<BHCustomTabBarItem *> *items = [NSKeyedUnarchiver unarchiveObjectWithData:savedItems];
+        if (!items) {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        }
+        return items;
     }
     return nil;
 }
@@ -95,6 +99,7 @@
                 [[BHCustomTabBarItem alloc] initWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_TAB_BAR_OPTION_5"] pageID:@"ntab"],
                 [[BHCustomTabBarItem alloc] initWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_TAB_BAR_OPTION_6"] pageID:@"messages"],
                 [[BHCustomTabBarItem alloc] initWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_TAB_BAR_OPTION_7"] pageID:@"grok"],
+                [[BHCustomTabBarItem alloc] initWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_TAB_BAR_OPTION_8"] pageID:@"media"],
 
             ]],
             [[BHCustomTabBarSection alloc] initWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_TAB_BAR_SECTION_2_TITLE"] items:@[]]

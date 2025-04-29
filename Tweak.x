@@ -22,7 +22,7 @@ static UIFont * _Nullable TAEStandardFontGroupReplacement(UIFont *self, SEL _cmd
             origFont = orig(self, _cmd);
             break;
     };
-    
+
     UIFont *newFont  = BH_getDefaultFont(origFont);
     return newFont != nil ? newFont : origFont;
 }
@@ -43,8 +43,8 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
 %hook T1AppDelegate
 - (_Bool)application:(UIApplication *)application didFinishLaunchingWithOptions:(id)arg2 {
     %orig;
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"FirstRun_4.3"]) {
-        [[NSUserDefaults standardUserDefaults] setValue:@"1strun" forKey:@"FirstRun_4.3"];
+    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"FirstRun_4.4"]) {
+        [[NSUserDefaults standardUserDefaults] setValue:@"1strun" forKey:@"FirstRun_4.4"];
         [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"dw_v"];
         [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"hide_promoted"];
         [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"voice"];
@@ -120,14 +120,14 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     if ([BHTManager stopHidingTabBar]) {
         return;
     }
-    
+
     return %orig;
 }
 - (void)setTabBarHidden:(BOOL)arg1 {
     if ([BHTManager stopHidingTabBar]) {
         return;
     }
-    
+
     return %orig;
 }
 %end
@@ -141,7 +141,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             NSFileManager *manager = [NSFileManager defaultManager];
             NSString *DocPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
             NSURL *imagePath = [[NSURL fileURLWithPath:DocPath] URLByAppendingPathComponent:@"msg_background.png"];
-            
+
             if ([manager fileExistsAtPath:imagePath.path]) {
                 UIImageView *backgroundImage = [[UIImageView alloc] initWithFrame:UIScreen.mainScreen.bounds];
                 backgroundImage.image = [UIImage imageNamed:imagePath.path];
@@ -149,7 +149,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
                 [self.view insertSubview:backgroundImage atIndex:0];
             }
         }
-        
+
         if ([[NSUserDefaults standardUserDefaults] objectForKey:@"background_color"]) { // set the backgeound as color
             NSString *hexCode = [[NSUserDefaults standardUserDefaults] objectForKey:@"background_color"];
             UIColor *selectedColor = [UIColor colorFromHexString:hexCode];
@@ -170,7 +170,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
         [copyButton setImage:[UIImage systemImageNamed:@"doc.on.clipboard"] forState:UIControlStateNormal];
         if (@available(iOS 14.0, *)) {
             [copyButton setShowsMenuAsPrimaryAction:true];
-            
+
             [copyButton setMenu:[UIMenu menuWithTitle:@"" children:@[
                 [UIAction actionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"COPY_PROFILE_INFO_MENU_OPTION_1"] image:[UIImage systemImageNamed:@"doc.on.clipboard"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
                 if (self.viewModel.bio != nil)
@@ -193,7 +193,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
                     UIPasteboard.generalPasteboard.string = self.viewModel.location;
             }],
             ]]];
-            
+
         } else {
             [copyButton addTarget:self action:@selector(copyButtonHandler:) forControlEvents:UIControlEventTouchUpInside];
         }
@@ -203,13 +203,13 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
         [copyButton.layer setBorderColor:[UIColor colorFromHexString:@"2F3336"].CGColor];
         [copyButton setTranslatesAutoresizingMaskIntoConstraints:false];
         [headerView.actionButtonsView addSubview:copyButton];
-        
+
         [NSLayoutConstraint activateConstraints:@[
             [copyButton.centerYAnchor constraintEqualToAnchor:headerView.actionButtonsView.centerYAnchor],
             [copyButton.widthAnchor constraintEqualToConstant:32],
             [copyButton.heightAnchor constraintEqualToConstant:32],
         ]];
-        
+
         if (isDeviceLanguageRTL()) {
             [NSLayoutConstraint activateConstraints:@[
                 [copyButton.leadingAnchor constraintEqualToAnchor:innerContentView.trailingAnchor constant:7],
@@ -270,31 +270,31 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     UITableViewCell *_orig = %orig;
     id tweet = [self itemAtIndexPath:arg2];
     NSString *class_name = NSStringFromClass([tweet classForCoder]);
-    
+
     if ([BHTManager HidePromoted] && [tweet respondsToSelector:@selector(isPromoted)] && [tweet performSelector:@selector(isPromoted)]) {
         [_orig setHidden:YES];
     }
-    
-    
+
+
     if ([self.adDisplayLocation isEqualToString:@"PROFILE_TWEETS"]) {
         if ([BHTManager hideWhoToFollow]) {
             if ([class_name isEqualToString:@"T1URTTimelineUserItemViewModel"] || [class_name isEqualToString:@"T1TwitterSwift.URTTimelineCarouselViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleHeaderViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleFooterViewModel"]) {
                 [_orig setHidden:true];
             }
         }
-        
+
         if ([BHTManager hideTopicsToFollow]) {
             if ([class_name isEqualToString:@"T1TwitterSwift.URTTimelineTopicCollectionViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleHeaderViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleFooterViewModel"] || [class_name isEqualToString:@"TwitterURT.URTTimelineCarouselViewModel"]) {
                 [_orig setHidden:true];
             }
         }
     }
-    
+
     if ([self.adDisplayLocation isEqualToString:@"OTHER"]) {
         if ([BHTManager HidePromoted] && ([class_name isEqualToString:@"TwitterURT.URTModuleHeaderViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleFooterViewModel"] || [class_name isEqualToString:@"T1URTTimelineMessageItemViewModel"])) {
             [_orig setHidden:true];
         }
-        
+
         if ([BHTManager HidePromoted] && [class_name isEqualToString:@"TwitterURT.URTTimelineEventSummaryViewModel"]) {
             _TtC10TwitterURT32URTTimelineEventSummaryViewModel *trendModel = tweet;
             if ([[trendModel.scribeItem allKeys] containsObject:@"promoted_id"]) {
@@ -311,7 +311,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             [_orig setHidden:true];
         }
     }
-    
+
     if ([self.adDisplayLocation isEqualToString:@"TIMELINE_HOME"]) {
         if ([tweet isKindOfClass:%c(T1URTTimelineStatusItemViewModel)]) {
             T1URTTimelineStatusItemViewModel *fullTweet = tweet;
@@ -321,7 +321,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
                 }
             }
         }
-        
+
         if ([BHTManager HideTopics]) {
             if ([tweet isKindOfClass:%c(_TtC10TwitterURT26URTTimelinePromptViewModel)]) {
                 [_orig setHidden:true];
@@ -334,17 +334,17 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             }
         }
     }
-    
+
     return _orig;
 }
 - (double)tableView:(id)arg1 heightForRowAtIndexPath:(id)arg2 {
     id tweet = [self itemAtIndexPath:arg2];
     NSString *class_name = NSStringFromClass([tweet classForCoder]);
-    
+
     if ([BHTManager HidePromoted] && [tweet respondsToSelector:@selector(isPromoted)] && [tweet performSelector:@selector(isPromoted)]) {
         return 0;
     }
-    
+
     if ([self.adDisplayLocation isEqualToString:@"PROFILE_TWEETS"]) {
         if ([BHTManager hideWhoToFollow]) {
             if ([class_name isEqualToString:@"T1URTTimelineUserItemViewModel"] || [class_name isEqualToString:@"T1TwitterSwift.URTTimelineCarouselViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleHeaderViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleFooterViewModel"]) {
@@ -357,12 +357,12 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             }
         }
     }
-    
+
     if ([self.adDisplayLocation isEqualToString:@"OTHER"]) {
         if ([BHTManager HidePromoted] && ([class_name isEqualToString:@"TwitterURT.URTModuleHeaderViewModel"] || [class_name isEqualToString:@"TwitterURT.URTModuleFooterViewModel"] || [class_name isEqualToString:@"T1URTTimelineMessageItemViewModel"])) {
             return 0;
         }
-        
+
         if ([BHTManager HidePromoted] && [class_name isEqualToString:@"TwitterURT.URTTimelineEventSummaryViewModel"]) {
             _TtC10TwitterURT32URTTimelineEventSummaryViewModel *trendModel = tweet;
             if ([[trendModel.scribeItem allKeys] containsObject:@"promoted_id"]) {
@@ -380,18 +380,18 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             return 0;
         }
     }
-    
+
     if ([self.adDisplayLocation isEqualToString:@"TIMELINE_HOME"]) {
         if ([tweet isKindOfClass:%c(T1URTTimelineStatusItemViewModel)]) {
             T1URTTimelineStatusItemViewModel *fullTweet = tweet;
-            
+
             if ([BHTManager HideTopics]) {
                 if ((fullTweet.banner != nil) && [fullTweet.banner isKindOfClass:%c(TFNTwitterURTTimelineStatusTopicBanner)]) {
                     return 0;
                 }
             }
         }
-        
+
         if ([BHTManager HideTopics]) {
             if ([tweet isKindOfClass:%c(_TtC10TwitterURT26URTTimelinePromptViewModel)]) {
                 return 0;
@@ -404,7 +404,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             }
         }
     }
-    
+
     return %orig;
 }
 - (double)tableView:(id)arg1 heightForHeaderInSection:(long long)arg2 {
@@ -432,7 +432,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     if ([BHTManager DownloadingVideos]) {
         UIContextMenuInteraction *menuInteraction = [[UIContextMenuInteraction alloc] initWithDelegate:self];
         [self setUserInteractionEnabled:true];
-        
+
         if ([BHTManager isDMVideoCell:self.inlineMediaView]) {
             [self addInteraction:menuInteraction];
         }
@@ -452,10 +452,10 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
         NSForegroundColorAttributeName: UIColor.labelColor
     }];
     TFNActiveTextItem *title = [[%c(TFNActiveTextItem) alloc] initWithTextModel:[[%c(TFNAttributedTextModel) alloc] initWithAttributedString:AttString] activeRanges:nil];
-    
+
     NSMutableArray *actions = [[NSMutableArray alloc] init];
     [actions addObject:title];
-    
+
     T1PlayerMediaEntitySessionProducible *session = self.inlineMediaView.viewModel.playerSessionProducer.sessionProducible;
     for (TFSTwitterEntityMediaVideoVariant *i in session.mediaEntity.videoInfo.variants) {
         if ([i.contentType isEqualToString:@"video/mp4"]) {
@@ -469,14 +469,14 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             }];
             [actions addObject:download];
         }
-        
+
         if ([i.contentType isEqualToString:@"application/x-mpegURL"]) {
             TFNActionItem *option = [objc_getClass("TFNActionItem") actionItemWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"FFMPEG_DOWNLOAD_OPTION_TITLE"] imageName:@"arrow_down_circle_stroke" action:^{
-                
+
                 self.hud = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
                 self.hud.textLabel.text = [[BHTBundle sharedBundle] localizedStringForKey:@"FETCHING_PROGRESS_TITLE"];
                 [self.hud showInView:topMostController().view];
-                
+
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     MediaInformation *mediaInfo = [BHTManager getM3U8Information:[NSURL URLWithString:i.url]];
                     dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -486,13 +486,13 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
                         [alert2 tfnPresentedCustomPresentFromViewController:topMostController() animated:YES completion:nil];
                     });
                 });
-                
+
             }];
-            
+
             [actions addObject:option];
         }
     }
-    
+
     TFNMenuSheetViewController *alert = [[%c(TFNMenuSheetViewController) alloc] initWithActionItems:[NSArray arrayWithArray:actions]];
     [alert tfnPresentedCustomPresentFromViewController:topMostController() animated:YES completion:nil];
 }
@@ -553,17 +553,17 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     UIImagePickerController *videoPicker = [[UIImagePickerController alloc] init];
     videoPicker.mediaTypes = @[(NSString*)kUTTypeMovie];
     videoPicker.delegate = self;
-    
+
     [topMostController() presentViewController:videoPicker animated:YES completion:nil];
 }
 %new - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
     NSURL *videoURL = info[UIImagePickerControllerMediaURL];
     TTMAssetVoiceRecording *attachment = self.attachment;
     NSURL *recorder_url = [NSURL fileURLWithPath:attachment.filePath];
-    
+
     if (recorder_url != nil) {
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        
+
         NSError *error = nil;
         if ([fileManager fileExistsAtPath:[recorder_url path]]) {
             [fileManager removeItemAtURL:recorder_url error:&error];
@@ -571,13 +571,13 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
                 NSLog(@"[BHTwitter] Error removing existing file: %@", error);
             }
         }
-        
+
         [fileManager copyItemAtURL:videoURL toURL:recorder_url error:&error];
         if (error) {
             NSLog(@"[BHTwitter] Error copying file: %@", error);
         }
     }
-    
+
     [picker dismissViewControllerAnimated:true completion:nil];
 }
 %new - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -590,7 +590,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
 %hook TFNPagingViewController
 - (void)viewDidAppear:(_Bool)animated {
     %orig(animated);
-    
+
     static dispatch_once_t once;
     dispatch_once(&once, ^ {
         if ([[NSUserDefaults standardUserDefaults] objectForKey:@"bh_color_theme_selectedColor"]) {
@@ -603,7 +603,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
 %hook TFNNavigationController
 - (void)viewDidAppear:(_Bool)animated {
     %orig(animated);
-    
+
     static dispatch_once_t once;
     dispatch_once(&once, ^ {
         if ([[NSUserDefaults standardUserDefaults] objectForKey:@"bh_color_theme_selectedColor"]) {
@@ -616,7 +616,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
 %hook T1AppSplitViewController
 - (void)viewDidAppear:(_Bool)animated {
     %orig(animated);
-    
+
     static dispatch_once_t once;
     dispatch_once(&once, ^ {
         if ([[NSUserDefaults standardUserDefaults] objectForKey:@"bh_color_theme_selectedColor"]) {
@@ -658,7 +658,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
         if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
             T1StatusInlineActionsView *actionsView = (T1StatusInlineActionsView *)self.delegate;
             T1StatusCell *tweetView;
-            
+
             if ([actionsView.superview isKindOfClass:%c(T1StandardStatusView)]) { // normal tweet in the time line
                 tweetView = [(T1StandardStatusView *)actionsView.superview eventHandler];
             } else if ([actionsView.superview isKindOfClass:%c(T1TweetDetailsFocalStatusView)]) { // Focus tweet
@@ -668,7 +668,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             } else {
                 return %orig;
             }
-            
+
             UIImage *tweetImage = BH_imageFromView(tweetView);
             UIActivityViewController *acVC = [[UIActivityViewController alloc] initWithActivityItems:@[tweetImage] applicationActivities:nil];
             if (is_iPad()) {
@@ -690,7 +690,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
         if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
             T1StatusInlineActionsView *actionsView = self.delegate;
             T1StatusCell *tweetView;
-            
+
             if ([actionsView.superview isKindOfClass:%c(T1StandardStatusView)]) { // normal tweet in the time line
                 tweetView = [(T1StandardStatusView *)actionsView.superview eventHandler];
             } else if ([actionsView.superview isKindOfClass:%c(T1TweetDetailsFocalStatusView)]) { // Focus tweet
@@ -700,7 +700,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             } else {
                 return %orig;
             }
-            
+
             UIImage *tweetImage = BH_imageFromView(tweetView);
             UIActivityViewController *acVC = [[UIActivityViewController alloc] initWithActivityItems:@[tweetImage] applicationActivities:nil];
             if (is_iPad()) {
@@ -723,11 +723,11 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
 + (NSArray *)_t1_inlineActionViewClassesForViewModel:(id)arg1 options:(NSUInteger)arg2 displayType:(NSUInteger)arg3 account:(id)arg4 {
     NSArray *_orig = %orig;
     NSMutableArray *newOrig = [_orig mutableCopy];
-    
+
     if ([BHTManager isVideoCell:arg1] && [BHTManager DownloadingVideos]) {
         [newOrig addObject:%c(BHDownloadInlineButton)];
     }
-    
+
     if ([newOrig containsObject:%c(TTAStatusInlineAnalyticsButton)] && [BHTManager hideViewCount]) {
         [newOrig removeObject:%c(TTAStatusInlineAnalyticsButton)];
     }
@@ -735,7 +735,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     if ([newOrig containsObject:%c(TTAStatusInlineBookmarkButton)] && [BHTManager hideBookmarkButton]) {
         [newOrig removeObject:%c(TTAStatusInlineBookmarkButton)];
     }
-    
+
     return [newOrig copy];
 }
 %end
@@ -745,11 +745,11 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
 + (NSArray *)_t1_inlineActionViewClassesForViewModel:(id)arg1 options:(NSUInteger)arg2 displayType:(NSUInteger)arg3 account:(id)arg4 {
     NSArray *_orig = %orig;
     NSMutableArray *newOrig = [_orig mutableCopy];
-    
+
     if ([BHTManager isVideoCell:arg1] && [BHTManager DownloadingVideos]) {
         [newOrig addObject:%c(BHDownloadInlineButton)];
     }
-    
+
     return [newOrig copy];
 }
 %end
@@ -762,16 +762,16 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     if (![BHTManager alwaysOpenSafari]) {
         return %orig;
     }
-    
+
     NSURL *url = [self initialURL];
     NSString *urlStr = [url absoluteString];
-    
+
     // In-app browser is used for two-factor authentication with security key,
     // login will not complete successfully if it's redirected to Safari
     if ([urlStr containsString:@"twitter.com/account/"] || [urlStr containsString:@"twitter.com/i/flow/"]) {
         return %orig;
     }
-    
+
     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     [self dismissViewControllerAnimated:NO completion:nil];
 }
@@ -841,11 +841,11 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     if ([key isEqualToString:@"edit_tweet_enabled"] || [key isEqualToString:@"edit_tweet_ga_composition_enabled"] || [key isEqualToString:@"edit_tweet_pdp_dialog_enabled"] || [key isEqualToString:@"edit_tweet_upsell_enabled"]) {
         return true;
     }
-    
+
     if ([key isEqualToString:@"conversational_replies_ios_pinned_replies_consumption_enabled"] || [key isEqualToString:@"conversational_replies_ios_pinned_replies_creation_enabled"]) {
         return true;
     }
-    
+
     return %orig;
 }
 %end
@@ -1132,7 +1132,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
         TFNSettingsNavigationItem *bhtwitter = [[%c(TFNSettingsNavigationItem) alloc] initWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"BHTWITTER_SETTINGS_TITLE"] detail:[[BHTBundle sharedBundle] localizedStringForKey:@"BHTWITTER_SETTINGS_DETAIL"] systemIconName:@"gear" controllerFactory:^UIViewController *{
             return [BHTManager BHTSettingsWithAccount:self.account];
         }];
-        
+
         if ([backingStore respondsToSelector:@selector(insertSection:atIndex:)]) {
             [backingStore insertSection:0 atIndex:0];
         } else {
@@ -1160,21 +1160,21 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0 && indexPath.row ==1 ) {
-        
+
         TFNTextCell *Tweakcell = [[%c(TFNTextCell) alloc] init];
         [Tweakcell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         [Tweakcell.textLabel setText:[[BHTBundle sharedBundle] localizedStringForKey:@"BHTWITTER_SETTINGS_DETAIL"]];
         return Tweakcell;
     } else if (indexPath.section == 0 && indexPath.row ==0 ) {
-        
+
         TFNTextCell *Settingscell = [[%c(TFNTextCell) alloc] init];
         [Settingscell setBackgroundColor:[UIColor clearColor]];
         Settingscell.textLabel.textColor = [UIColor colorWithRed:0.40 green:0.47 blue:0.53 alpha:1.0];
         [Settingscell.textLabel setText:[[BHTBundle sharedBundle] localizedStringForKey:@"BHTWITTER_SETTINGS_TITLE"]];
         return Settingscell;
     }
-    
-    
+
+
     return %orig;
 }
 
@@ -1200,10 +1200,10 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             NSForegroundColorAttributeName: UIColor.labelColor
         }];
         TFNActiveTextItem *title = [[%c(TFNActiveTextItem) alloc] initWithTextModel:[[%c(TFNAttributedTextModel) alloc] initWithAttributedString:AttString] activeRanges:nil];
-        
+
         NSMutableArray *actions = [[NSMutableArray alloc] init];
         [actions addObject:title];
-        
+
         NSPropertyListFormat plistFormat;
         NSMutableDictionary *plistDictionary = [NSPropertyListSerialization propertyListWithData:[NSData dataWithContentsOfURL:[NSURL fileURLWithPath:@"/var/mobile/Library/Fonts/AddedFontCache.plist"]] options:NSPropertyListImmutable format:&plistFormat error:nil];
         [plistDictionary enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
@@ -1226,12 +1226,12 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
                 NSLog(@"Unable to find installed fonts /n reason: %@", exception.reason);
             }
         }];
-        
+
         TFNMenuSheetViewController *alert = [[%c(TFNMenuSheetViewController) alloc] initWithActionItems:[NSArray arrayWithArray:actions]];
         [alert tfnPresentedCustomPresentFromViewController:self animated:YES completion:nil];
     } else {
         UIAlertController *errAlert = [UIAlertController alertControllerWithTitle:@"BHTwitter" message:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_FONTS_TUT_ALERT_MESSAGE"] preferredStyle:UIAlertControllerStyleAlert];
-        
+
         [errAlert addAction:[UIAlertAction actionWithTitle:@"iFont application" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://apps.apple.com/sa/app/ifont-find-install-any-font/id1173222289"] options:@{} completionHandler:nil];
         }]];
@@ -1246,14 +1246,14 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSMutableArray *fontsMethods = [NSMutableArray arrayWithArray:@[]];
-        
+
         unsigned int methodCount = 0;
         Method *methods = class_copyMethodList([self class], &methodCount);
         for (unsigned int i = 0; i < methodCount; ++i) {
             Method method = methods[i];
             SEL sel = method_getName(method);
             NSString *selStr = NSStringFromSelector(sel);
-            
+
             NSMethodSignature *methodSig = [self instanceMethodSignatureForSelector:sel];
             if (strcmp(methodSig.methodReturnType, @encode(void)) == 0) {
                 // Only add methods that return an object
@@ -1275,7 +1275,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
             }
         }
         free(methods);
-        
+
         originalFontsIMP = [NSMutableDictionary new];
         batchSwizzlingOnClass([self class], [fontsMethods copy], (IMP)TAEStandardFontGroupReplacement);
     });
@@ -1302,7 +1302,7 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
     NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
     // Someone needs to hold reference the to Notification
     _PasteboardChangeObserver = [center addObserverForName:UIPasteboardChangedNotification object:nil queue:mainQueue usingBlock:^(NSNotification * _Nonnull note){
-        
+
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             trackingParams = @{
@@ -1310,18 +1310,18 @@ static void batchSwizzlingOnClass(Class cls, NSArray<NSString*>*origSelectors, I
                 @"x.com" : @[@"s", @"t"],
             };
         });
-        
+
         if ([BHTManager stripTrackingParams]) {
             if (UIPasteboard.generalPasteboard.hasURLs) {
                 NSURL *pasteboardURL = UIPasteboard.generalPasteboard.URL;
                 NSArray<NSString*>* params = trackingParams[pasteboardURL.host];
-                
+
                 if ([pasteboardURL.absoluteString isEqualToString:_lastCopiedURL] == NO && params != nil && pasteboardURL.query != nil) {
                     // to prevent endless copy loop
                     _lastCopiedURL = pasteboardURL.absoluteString;
                     NSURLComponents *cleanedURL = [NSURLComponents componentsWithURL:pasteboardURL resolvingAgainstBaseURL:NO];
                     NSMutableArray<NSURLQueryItem*> *safeParams = [NSMutableArray arrayWithCapacity:0];
-                    
+
                     for (NSURLQueryItem *item in cleanedURL.queryItems) {
                         if ([params containsObject:item.name] == NO) {
                             [safeParams addObject:item];

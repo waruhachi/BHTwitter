@@ -64,152 +64,152 @@ static const NSString *KEY_HIT_TEST_EDGE_INSETS = @"HitTestEdgeInsets";
         NSForegroundColorAttributeName: UIColor.labelColor
     }];
     TFNActiveTextItem *title = [[objc_getClass("TFNActiveTextItem") alloc] initWithTextModel:[[objc_getClass("TFNAttributedTextModel") alloc] initWithAttributedString:AttString] activeRanges:nil];
-    
+
     NSMutableArray *actions = [[NSMutableArray alloc] init];
     [actions addObject:title];
     NSMutableArray *innerActions = [[NSMutableArray alloc] init];
     [innerActions addObject:title];
-    
-    
+
+
     if ([self.delegate.delegate isKindOfClass:objc_getClass("T1SlideshowStatusView")]) {
         T1SlideshowStatusView *selectedMedia = self.delegate.delegate;
-        
+
         for (TFSTwitterEntityMediaVideoVariant *video in selectedMedia.media.videoInfo.variants) {
             if ([video.contentType isEqualToString:@"video/mp4"]) {
                 TFNActionItem *option = [objc_getClass("TFNActionItem") actionItemWithTitle:[BHTManager getVideoQuality:video.url] imageName:@"arrow_down_circle_stroke" action:^{
                     BHDownload *dwManager = [[BHDownload alloc] init];
                     [dwManager downloadFileWithURL:[NSURL URLWithString:video.url]];
                     [dwManager setDelegate:self];
-                    
+
                     if (![BHTManager DirectSave]) {
                         self.hud = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
                         self.hud.textLabel.text = [[BHTBundle sharedBundle] localizedStringForKey:@"PROGRESS_DOWNLOADING_STATUS_TITLE"];
                         [self.hud showInView:topMostController().view];
                     }
                 }];
-                
+
                 [actions addObject:option];
             }
-            
+
             if ([video.contentType isEqualToString:@"application/x-mpegURL"]) {
                 TFNActionItem *option = [objc_getClass("TFNActionItem") actionItemWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"FFMPEG_DOWNLOAD_OPTION_TITLE"] imageName:@"arrow_down_circle_stroke" action:^{
-                    
+
                     self.hud = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
                     self.hud.textLabel.text = [[BHTBundle sharedBundle] localizedStringForKey:@"FETCHING_PROGRESS_TITLE"];
                     [self.hud showInView:topMostController().view];
-                    
+
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         MediaInformation *mediaInfo = [BHTManager getM3U8Information:[NSURL URLWithString:video.url]];
                         dispatch_async(dispatch_get_main_queue(), ^(void) {
                             [self.hud dismiss];
-                            
+
                             TFNMenuSheetViewController *alert2 = [BHTManager newFFmpegDownloadSheet:mediaInfo downloadingURL:[NSURL URLWithString:video.url] progressView:self.hud];
                             [alert2 tfnPresentedCustomPresentFromViewController:topMostController() animated:YES completion:nil];
                         });
                     });
-                    
+
                 }];
-                
+
                 [actions addObject:option];
             }
         }
     } else {
         if (self.delegate.viewModel.representedMediaEntities.count > 1) {
             [self.delegate.viewModel.representedMediaEntities enumerateObjectsUsingBlock:^(TFSTwitterEntityMedia * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                
+
                 if (obj.mediaType == 2 || obj.mediaType == 3) {
                     TFNActionItem *option = [objc_getClass("TFNActionItem") actionItemWithTitle:[NSString stringWithFormat:@"Video %lu", (unsigned long)idx+1] imageName:@"arrow_down_circle_stroke" action:^{
-                        
+
                         for (TFSTwitterEntityMediaVideoVariant *video in obj.videoInfo.variants) {
                             if ([video.contentType isEqualToString:@"video/mp4"]) {
                                 TFNActionItem *innerOption = [objc_getClass("TFNActionItem") actionItemWithTitle:[BHTManager getVideoQuality:video.url] imageName:@"arrow_down_circle_stroke" action:^{
-                                    
+
                                     BHDownload *dwManager = [[BHDownload alloc] init];
                                     [dwManager downloadFileWithURL:[NSURL URLWithString:video.url]];
                                     [dwManager setDelegate:self];
-                                    
+
                                     if (![BHTManager DirectSave]) {
                                         self.hud = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
                                         self.hud.textLabel.text = [[BHTBundle sharedBundle] localizedStringForKey:@"PROGRESS_DOWNLOADING_STATUS_TITLE"];
                                         [self.hud showInView:topMostController().view];
                                     }
-                                    
+
                                 }];
-                                
+
                                 [innerActions addObject:innerOption];
                             }
-                            
+
                             if ([video.contentType isEqualToString:@"application/x-mpegURL"]) {
                                 TFNActionItem *option = [objc_getClass("TFNActionItem") actionItemWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"FFMPEG_DOWNLOAD_OPTION_TITLE"] imageName:@"arrow_down_circle_stroke" action:^{
-                                    
+
                                     self.hud = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
                                     self.hud.textLabel.text = [[BHTBundle sharedBundle] localizedStringForKey:@"FETCHING_PROGRESS_TITLE"];
                                     [self.hud showInView:topMostController().view];
-                                    
+
                                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                                         MediaInformation *mediaInfo = [BHTManager getM3U8Information:[NSURL URLWithString:video.url]];
                                         dispatch_async(dispatch_get_main_queue(), ^(void) {
                                             [self.hud dismiss];
-                                            
+
                                             TFNMenuSheetViewController *alert2 = [BHTManager newFFmpegDownloadSheet:mediaInfo downloadingURL:[NSURL URLWithString:video.url] progressView:self.hud];
                                             [alert2 tfnPresentedCustomPresentFromViewController:topMostController() animated:YES completion:nil];
                                         });
                                     });
                                 }];
-                                
+
                                 [innerActions addObject:option];
                             }
                         }
-                        
+
                         TFNMenuSheetViewController *innerAlert = [[objc_getClass("TFNMenuSheetViewController") alloc] initWithActionItems:[NSArray arrayWithArray:innerActions]];
                         [innerAlert tfnPresentedCustomPresentFromViewController:topMostController() animated:YES completion:nil];
                     }];
-                    
+
                     [actions addObject:option];
                 }
             }];
         } else {
             for (TFSTwitterEntityMediaVideoVariant *video in self.delegate.viewModel.representedMediaEntities.firstObject.videoInfo.variants) {
                 if ([video.contentType isEqualToString:@"video/mp4"]) {
-                    
+
                     TFNActionItem *option = [objc_getClass("TFNActionItem") actionItemWithTitle:[BHTManager getVideoQuality:video.url] imageName:@"arrow_down_circle_stroke" action:^{
                         BHDownload *dwManager = [[BHDownload alloc] init];
                         [dwManager downloadFileWithURL:[NSURL URLWithString:video.url]];
                         [dwManager setDelegate:self];
-                        
+
                         if (![BHTManager DirectSave]) {
                             self.hud = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
                             self.hud.textLabel.text = [[BHTBundle sharedBundle] localizedStringForKey:@"PROGRESS_DOWNLOADING_STATUS_TITLE"];
                             [self.hud showInView:topMostController().view];
                         }
                     }];
-                    
+
                     [actions addObject:option];
                 }
                 if ([video.contentType isEqualToString:@"application/x-mpegURL"]) {
                     TFNActionItem *option = [objc_getClass("TFNActionItem") actionItemWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"FFMPEG_DOWNLOAD_OPTION_TITLE"] imageName:@"arrow_down_circle_stroke" action:^{
-                        
+
                         self.hud = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
                         self.hud.textLabel.text = [[BHTBundle sharedBundle] localizedStringForKey:@"FETCHING_PROGRESS_TITLE"];
                         [self.hud showInView:topMostController().view];
-                        
+
                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                             MediaInformation *mediaInfo = [BHTManager getM3U8Information:[NSURL URLWithString:video.url]];
                             dispatch_async(dispatch_get_main_queue(), ^(void) {
                                 [self.hud dismiss];
-                                
+
                                 TFNMenuSheetViewController *alert2 = [BHTManager newFFmpegDownloadSheet:mediaInfo downloadingURL:[NSURL URLWithString:video.url] progressView:self.hud];
                                 [alert2 tfnPresentedCustomPresentFromViewController:topMostController() animated:YES completion:nil];
                             });
                         });
                     }];
-                    
+
                     [actions addObject:option];
                 }
             }
         }
     }
-    
+
     TFNMenuSheetViewController *alert = [[objc_getClass("TFNMenuSheetViewController") alloc] initWithActionItems:[NSArray arrayWithArray:actions]];
     [alert tfnPresentedCustomPresentFromViewController:topMostController() animated:YES completion:nil];
 }
@@ -258,7 +258,11 @@ static const NSString *KEY_HIT_TEST_EDGE_INSETS = @"HitTestEdgeInsets";
     return 2;
 }
 
-- (double)extraWidth {
+- (CGFloat)extraWidth {
+    return 40;
+}
+
+- (CGFloat)extraWidthWithStyle {
     return 40;
 }
 
@@ -298,10 +302,10 @@ static const NSString *KEY_HIT_TEST_EDGE_INSETS = @"HitTestEdgeInsets";
     if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero) || !self.enabled || self.hidden) {
         return [super pointInside:point withEvent:event];
     }
-    
+
     CGRect relativeFrame = self.bounds;
     CGRect hitFrame = UIEdgeInsetsInsetRect(relativeFrame, self.hitTestEdgeInsets);
-    
+
     return CGRectContainsPoint(hitFrame, point);
 }
 

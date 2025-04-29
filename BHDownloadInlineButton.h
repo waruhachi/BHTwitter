@@ -28,7 +28,8 @@
 - (void)setTouchInsets:(UIEdgeInsets)arg1;
 - (id)_t1_imageNamed:(id)arg1 fitSize:(CGSize)arg2 fillColor:(id)arg3;
 - (_Bool)shouldShowCount;
-- (double)extraWidth;
+- (CGFloat)extraWidth;
+- (CGFloat)extraWidthWithStyle;
 - (CGFloat)trailingEdgeInset;
 - (NSUInteger)touchInsetPriority;
 - (NSUInteger)alternateInlineActionType;

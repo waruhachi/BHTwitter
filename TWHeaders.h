@@ -8,7 +8,7 @@
 #import <objc/runtime.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <CoreServices/CoreServices.h>
 #import <AVKit/AVKit.h>
 #import <Photos/Photos.h>
 #import <SafariServices/SafariServices.h>
@@ -509,7 +509,7 @@ typedef FLEXAlertAction * _Nonnull (^FLEXAlertActionHandler)(void(^handler)(NSAr
 static void BH_changeTwitterColor(NSInteger colorID) {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     TAEColorSettings *colorSettings = [objc_getClass("TAEColorSettings") sharedSettings];
-    
+
     [defaults setObject:@(colorID) forKey:@"T1ColorSettingsPrimaryColorOptionKey"];
     [colorSettings setPrimaryColorOption:colorID];
 }
@@ -520,7 +520,7 @@ static UIImage *BH_imageFromView(UIView *view) {
     [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:false];
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
+
     return img;
 }
 
