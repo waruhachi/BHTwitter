@@ -59,7 +59,13 @@
 "DISABLE_VIDEO_LAYER_CAPTIONS_OPTION_TITLE" = "Desactivar subtítulos";
 
 "VOICE_OPTION_TITLE" = "Función de voz";
-"VOICE_OPTION_DETAIL_TITLE" = "Activar voz en tweet y DM";
+"VOICE_OPTION_DETAIL_TITLE" = "Activar voz en tweet y respuestas";
+
+"DM_REPLY_LATER_ENABLED_OPTION_TITLE" = "Responder más tarde en los MD";
+"DM_REPLY_LATER_ENABLED_OPTION_DETAIL_TITLE" = "Guarda tus respuestas de mensaje directo para enviarlas más tarde.";
+
+"MEDIA_UPLOAD_4K_ENABLED_OPTION_TITLE" = "Subir contenido en 4K";
+"MEDIA_UPLOAD_4K_ENABLED_OPTION_DETAIL_TITLE" = "Permite subir videos e imágenes en resolución 4K.";
 
 "VIDEO_ZOOM_OPTION_TITLE" = "Función zoom en vídeos";
 "VIDEO_ZOOM_OPTION_DETAIL_TITLE" = "Puedes hacer zoom en el vídeo haciendo doble clic en el centro del vídeo";
@@ -135,7 +141,7 @@
 "CUSTOM_TAB_BAR_OPTION_5" = "Notificaciones";
 "CUSTOM_TAB_BAR_OPTION_6" = "Mensajes";
 "CUSTOM_TAB_BAR_OPTION_7" = "Grok";
-"CUSTOM_TAB_BAR_OPTION_8" = "Medios de comunicación";
+"CUSTOM_TAB_BAR_OPTION_8" = "Vídeo";
 
 "TWITTER_BLUE_SECTION_FOOTER_TITLE" = "Es posible que deba reiniciar la aplicación de Twitter para aplicar los cambios";
 
@@ -175,6 +181,8 @@
 
 "DEVELOPER_SECTION_HEADER_TITLE" = "Desarrollador";
 
+"PEOPLE_WHO_CONTRIBUTED_SECTION_HEADER_TITLE" = "Personas que han contribuido";
+
 "ADVANCED_SEARCH_TITLE" = "Búsqueda Avanzada";
 "ADVANCED_SEARCH_DETAIL_TITLE" = "Búsqueda avanzada habilitada en Twitter.";
 
@@ -194,3 +202,8 @@
 "APP_ICON_HEADER_TITLE" = "Elige un icono de aplicación personalizado para la pantalla de inicio de tu dispositivo. Cámbialo en cualquier momento.";
 
 "FFMPEG_DOWNLOAD_OPTION_TITLE" = "Descarga con FFmpeg";
+
+"SELECT_URL_HOST_AFTER_COPY_OPTION_TITLE" = "Seleccione el host URL del tweet después de copiar";
+
+"UPLOAD_CUSTOM_VOICE_OPTION_TITLE" = "Subir voz personalizada";
+"UPLOAD_CUSTOM_VOICE_OPTION_DETAIL_TITLE" = "Subir vídeo personalizado después de grabar una voz en el puesto";
