@@ -5,6 +5,7 @@
 //  Created by BandarHelal
 //
 
+
 #import "SettingsViewController.h"
 #import "BHTBundle/BHTBundle.h"
 #import "Colours/Colours.h"
@@ -12,6 +13,35 @@
 #import "ThemeColor/BHColorThemeViewController.h"
 #import "CustomTabBar/BHCustomTabBarViewController.h"
 
+typedef NS_ENUM(NSInteger, TwitterFontWeight) {
+    TwitterFontWeightRegular,
+    TwitterFontWeightMedium,
+    TwitterFontWeightSemibold,
+    TwitterFontWeightBold
+};
+
+typedef NS_ENUM(NSInteger, TwitterFontStyle) {
+    TwitterFontStyleRegular,
+    TwitterFontStyleSemibold,
+    TwitterFontStyleBold
+};
+
+static UIFont *TwitterChirpFont(TwitterFontStyle style) {
+    switch (style) {
+        case TwitterFontStyleBold:
+            return [UIFont fontWithName:@"ChirpUIVF_wght3200000_opsz150000" size:17] ?: 
+                   [UIFont systemFontOfSize:17 weight:UIFontWeightBold];
+
+        case TwitterFontStyleSemibold:
+            return [UIFont fontWithName:@"ChirpUIVF_wght2BC0000_opszE0000" size:14] ?: 
+                   [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+
+        case TwitterFontStyleRegular:
+        default:
+            return [UIFont fontWithName:@"ChirpUIVF_wght1900000_opszE0000" size:12] ?: 
+                   [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
+    }
+}
 @interface SettingsViewController () <UIFontPickerViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIColorPickerViewControllerDelegate>
 @property (nonatomic, strong) TFNTwitterAccount *twAccount;
 @property (nonatomic, assign) BOOL hasDynamicSpecifiers;
@@ -135,9 +165,9 @@
         PSSpecifier *mainSection = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"MAIN_SECTION_HEADER_TITLE"] footer:nil];
         PSSpecifier *twitterBlueSection = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"TWITTER_BLUE_SECTION_HEADER_TITLE"] footer:[[BHTBundle sharedBundle] localizedStringForKey:@"TWITTER_BLUE_SECTION_FOOTER_TITLE"]];
         PSSpecifier *layoutSection = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"LAYOUT_CUS_SECTION_HEADER_TITLE"] footer:[[BHTBundle sharedBundle] localizedStringForKey:@"LAYOUT_CUS_SECTION_FOOTER_TITLE"]];
-        PSSpecifier *debug = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"DEBUG_SECTION_HEADER_TITLE"] footer:nil];
         PSSpecifier *legalSection = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"LEGAL_SECTION_HEADER_TITLE"] footer:nil];
-        PSSpecifier *developer = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"DEVELOPER_SECTION_HEADER_TITLE"] footer:[NSString stringWithFormat:@"BHTwitter v%@", [[BHTBundle sharedBundle] BHTwitterVersion]]];
+        PSSpecifier *developer = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"DEVELOPER_SECTION_HEADER_TITLE"] footer:nil];
+        PSSpecifier *other = [self newSectionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"PEOPLE_WHO_CONTRIBUTED_SECTION_HEADER_TITLE"] footer:[NSString stringWithFormat:@"BHTwitter v%@", [[BHTBundle sharedBundle] BHTwitterVersion]]];
         
         PSSpecifier *download = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"DOWNLOAD_VIDEOS_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"DOWNLOAD_VIDEOS_OPTION_DETAIL_TITLE"] key:@"dw_v" defaultValue:true changeAction:nil];
         
@@ -145,7 +175,13 @@
         
         PSSpecifier *hideAds = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_ADS_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_ADS_OPTION_DETAIL_TITLE"] key:@"hide_promoted" defaultValue:true changeAction:nil];
         
+        PSSpecifier *voiceFeature = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"VOICE_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"VOICE_OPTION_DETAIL_TITLE"] key:@"voice_creation_enabled" defaultValue:false changeAction:nil];
+
         PSSpecifier *customVoice = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"UPLOAD_CUSTOM_VOICE_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"UPLOAD_CUSTOM_VOICE_OPTION_DETAIL_TITLE"] key:@"custom_voice_upload" defaultValue:true changeAction:nil];
+
+        PSSpecifier *dmReplyLater = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"DM_REPLY_LATER_ENABLED_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"DM_REPLY_LATER_ENABLED_OPTION_DETAIL_TITLE"] key:@"dm_reply_later_enabled" defaultValue:false changeAction:nil];
+
+        PSSpecifier *mediaUpload4k = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"MEDIA_UPLOAD_4K_ENABLED_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"MEDIA_UPLOAD_4K_ENABLED_OPTION_DETAIL_TITLE"] key:@"media_upload_4k_enabled" defaultValue:false changeAction:nil];
 
         PSSpecifier *hideTopics = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_TOPICS_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_TOPICS_OPTION_DETAIL_TITLE"] key:@"hide_topics" defaultValue:false changeAction:nil];
         
@@ -201,10 +237,6 @@
         // Layout customization section
         PSSpecifier *customDirectBackgroundView = [self newButtonCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_DIRECT_BACKGROUND_VIEW_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"CUSTOM_DIRECT_BACKGROUND_VIEW_DETAIL_TITLE"] dynamicRule:nil action:@selector(showCustomBackgroundViewViewController:)];
         
-        PSSpecifier *origTweetStyle = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"ORIG_TWEET_STYLE_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"ORIG_TWEET_STYLE_OPTION_DETAIL_TITLE"] key:@"old_style" defaultValue:true changeAction:nil];
-        
-        PSSpecifier *stopHidingTabBar = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"STOP_HIDING_TAB_BAR_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"STOP_HIDING_TAB_BAR_DETAIL_TITLE"] key:@"no_tab_bar_hiding" defaultValue:false changeAction:nil];
-        
         PSSpecifier *hideViewCount = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_VIEW_COUNT_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_VIEW_COUNT_OPTION_DETAIL_TITLE"] key:@"hide_view_count" defaultValue:false changeAction:nil];
 
         PSSpecifier *hideBookmarkButton = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_MARKBOOK_BUTTON_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"HIDE_MARKBOOK_BUTTON_OPTION_DETAIL_TITLE"] key:@"hide_bookmark_button" defaultValue:false changeAction:nil];
@@ -219,28 +251,32 @@
         
         PSSpecifier *boldFontsPicker = [self newButtonCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"BOLD_FONTS_PICKER_OPTION_TITLE"] detailTitle:[[NSUserDefaults standardUserDefaults] objectForKey:@"bhtwitter_font_2"] dynamicRule:@"en_font, ==, 0" action:@selector(showBoldFontPicker:)];
         
-        // debug section
-        PSSpecifier *flex = [self newSwitchCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"FLEX_OPTION_TITLE"] detailTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"FLEX_OPTION_DETAIL_TITLE"] key:@"flex_twitter" defaultValue:false changeAction:@selector(FLEXAction:)];
-        
         // legal section
         PSSpecifier *acknowledgements = [self newButtonCellWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"LEGAL_BUTTON_TITLE"] detailTitle:nil dynamicRule:nil action:@selector(showAcknowledgements:)];
         
-        // dvelopers section
+        // developer section
         PSSpecifier *bandarHL = [self newHBTwitterCellWithTitle:@"BandarHelal" twitterUsername:@"BandarHL" customAvatarURL:@"https://unavatar.io/twitter/BandarHL"];
         PSSpecifier *tipJar = [self newHBLinkCellWithTitle:@"Tip Jar" detailTitle:@"Donate Via Paypal" url:@"https://www.paypal.me/BandarHL"];
         PSSpecifier *buymecoffee = [self newHBLinkCellWithTitle:@"Buy Me A Coffee" detailTitle:nil url:@"https://www.buymeacoffee.com/bandarHL"];
         PSSpecifier *sourceCode = [self newHBLinkCellWithTitle:@"BHTwitter" detailTitle:@"Code source of BHTwitter" url:@"https://github.com/BandarHL/BHTwitter/"];
+
+        // people who contributed section
+        PSSpecifier *actuallyaridan = [self newHBTwitterCellWithTitle:@"aridan" twitterUsername:@"actuallyaridan" customAvatarURL:@"https://avatars.githubusercontent.com/u/96298432?v=4"];
+        PSSpecifier *tulugaak = [self newHBTwitterCellWithTitle:@"tekkeitsertok" twitterUsername:@"tulugaak1" customAvatarURL:@"https://pbs.twimg.com/profile_images/1916637241935360000/QcBqwGBT_400x400.jpg"];
+        PSSpecifier *timi2506 = [self newHBTwitterCellWithTitle:@"timi2506" twitterUsername:@"timi2506" customAvatarURL:@"https://avatars.githubusercontent.com/u/172171055?v=4"];
+        PSSpecifier *nyathea = [self newHBTwitterCellWithTitle:@"nyathea" twitterUsername:@"nyaathea" customAvatarURL:@"https://avatars.githubusercontent.com/u/108613931?v=4"];
         
         _specifiers = [NSMutableArray arrayWithArray:@[
             
             mainSection, // 0
             download,
-            hideAds,
+            voiceFeature,
             customVoice,
+            dmReplyLater,
+            mediaUpload4k,
             hideTopics,
             hideWhoToFollow,
             hideTopicsToFollow,
-            hidePremiumOffer,
             hideTrendVideos,
             videoLayerCaption,
             directSave,
@@ -262,14 +298,15 @@
             
             twitterBlueSection, // 1
             undoTweet,
+            directSave,
+            hideAds,
+            hidePremiumOffer,
             appTheme,
             appIcon,
             customTabBarVC,
             
             layoutSection, // 2
             customDirectBackgroundView,
-            origTweetStyle,
-            stopHidingTabBar,
             hideViewCount,
             hideBookmarkButton,
             forceFullFrame,
@@ -281,14 +318,17 @@
             legalSection, // 3
             acknowledgements,
             
-            debug, // 4
-            flex,
-            
             developer, // 5
             bandarHL,
             tipJar,
             buymecoffee,
-            sourceCode
+            sourceCode,
+
+            other, // 6
+            actuallyaridan,
+            tulugaak,
+            timi2506,
+            nyathea,
         ]];
         
         [self collectDynamicSpecifiersFromArray:_specifiers];
@@ -503,7 +543,7 @@
     UITableViewCell *specifierCell = [specifier propertyForKey:PSTableCellKey];
     PSSpecifier *selectionSpecifier = [self specifierForID:@"Select URL host"];
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"BHTwitter" message:@"plaese select what host you prefre" preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"BHTwitter" message:@"please select what host you prefer" preferredStyle:UIAlertControllerStyleActionSheet];
 
     if (alert.popoverPresentationController != nil) {
         CGFloat midX = CGRectGetMidX(specifierCell.frame);
@@ -586,14 +626,6 @@
     [self presentViewController:alert animated:true completion:nil];
 }
 
-- (void)FLEXAction:(UISwitch *)sender {
-    if (sender.isOn) {
-        [[objc_getClass("FLEXManager") sharedManager] showExplorer];
-    } else {
-        [[objc_getClass("FLEXManager") sharedManager] hideExplorer];
-    }
-}
-
 
 - (void)colorPickerViewControllerDidSelectColor:(UIColorPickerViewController *)viewController {
     [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"change_msg_background"];
@@ -633,6 +665,8 @@
     if (self) {
         NSString *subTitle = [specifier.properties[@"subtitle"] copy];
         BOOL isBig = specifier.properties[@"big"] ? ((NSNumber *)specifier.properties[@"big"]).boolValue : NO;
+
+        // Keep subtitle style exactly as before
         self.detailTextLabel.text = subTitle;
         self.detailTextLabel.numberOfLines = isBig ? 0 : 1;
         self.detailTextLabel.textColor = [UIColor secondaryLabelColor];
@@ -647,6 +681,8 @@
     if ((self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier specifier:specifier])) {
         NSString *subTitle = [specifier.properties[@"subtitle"] copy];
         BOOL isBig = specifier.properties[@"big"] ? ((NSNumber *)specifier.properties[@"big"]).boolValue : NO;
+
+        // Keep subtitle style exactly as before
         self.detailTextLabel.text = subTitle;
         self.detailTextLabel.numberOfLines = isBig ? 0 : 1;
         self.detailTextLabel.textColor = [UIColor secondaryLabelColor];

@@ -59,7 +59,13 @@
 "DISABLE_VIDEO_LAYER_CAPTIONS_OPTION_TITLE" = "تعطيل وصف الفيديو";
 
 "VOICE_OPTION_TITLE" = "الملاحظة الصوتية";
-"VOICE_OPTION_DETAIL_TITLE" = "تفعيل الملاحظة الصوتية في التغريدة والرسائل الخاصة";
+"VOICE_OPTION_DETAIL_TITLE" = "تفعيل الملاحظة الصوتية في التغريدة والردود";
+
+"DM_REPLY_LATER_ENABLED_OPTION_TITLE" = "الرد لاحقًا في الرسائل الخاصة";
+"DM_REPLY_LATER_ENABLED_OPTION_DETAIL_TITLE" = "احفظ ردودك في الرسائل الخاصة لإرسالها لاحقًا.";
+
+"MEDIA_UPLOAD_4K_ENABLED_OPTION_TITLE" = "تحميل الوسائط بدقة 4K";
+"MEDIA_UPLOAD_4K_ENABLED_OPTION_DETAIL_TITLE" = "فعّل تحميل مقاطع الفيديو والصور عالية الدقة (4K).";
 
 "VIDEO_ZOOM_OPTION_TITLE" = "تكبير الفيديو";
 "VIDEO_ZOOM_OPTION_DETAIL_TITLE" = "يمكنك تكبير الفيديو عبر الضغط مرتين في وسط الفيديو .";
@@ -135,7 +141,7 @@
 "CUSTOM_TAB_BAR_OPTION_5" = "التنبيهات";
 "CUSTOM_TAB_BAR_OPTION_6" = "الرسائل";
 "CUSTOM_TAB_BAR_OPTION_7" = "Grok";
-"CUSTOM_TAB_BAR_OPTION_8" = "وسائط";
+"CUSTOM_TAB_BAR_OPTION_8" = "الفيديو";
 
 
 "TWITTER_BLUE_SECTION_FOOTER_TITLE" = "قم بإغلاق التطبيق لحفظ التغييرات .";
@@ -175,6 +181,8 @@
 "LEGAL_BUTTON_TITLE" = "الحقوق";
 
 "DEVELOPER_SECTION_HEADER_TITLE" = "المطور";
+
+"PEOPLE_WHO_CONTRIBUTED_SECTION_HEADER_TITLE" = "الأشخاص الذين ساهموا";
 
 "ADVANCED_SEARCH_TITLE" = "البحث المُتقدّم";
 "ADVANCED_SEARCH_DETAIL_TITLE" = "تفعيل خاصيّة البحث المُتقدّم في تويتر .";
